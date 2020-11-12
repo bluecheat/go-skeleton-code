@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package generated;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "skeleton-code/proto/generated";
+
+service VehicleService {
+  // 차량 등록
+  rpc RegisterVehicle (RegisterVehicleRequest) returns (Vehicle) {
+      option (google.api.http) = {
+        post: "/v1/vehicle"
+        body: "*"
+      };
+  }
+  // 차량 리스트
+  rpc ListVehicle(ListVehicleRequest) returns (Vehicles) {
+    option (google.api.http) = {
+      get: "/v1/vehicle"
+    };
+  }
+  // 차량 호출
+  rpc GetVehicle(VehicleID) returns (Vehicle) {
+    option (google.api.http) = {
+      get: "/v1/vehicle/{id}"
+    };
+  }
+  // 차량 정보 변경
+  rpc UpdateVehicle (VehicleID) returns (Vehicle)  {
+    option (google.api.http) = {
+      put: "/v1/vehicle/{id}"
+      body: "*"
+    };
+  }
+  // 차량 정보 삭제
+  rpc DeleteVehicle (VehicleID) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/vehicle/{id}"
+    };
+  }
+}
+
+message VehicleID  {
+  string id = 1;
+}
+
+message RegisterVehicleRequest {
+  string name = 1;
+  string vin = 2;
+  string number = 3;
+}
+
+message ListVehicleRequest {
+  string name = 1;
+  string vin = 2;
+  string number = 3;
+}
+
+message Vehicles {
+  repeated Vehicle vehicles = 1;
+}
+
+message Vehicle {
+  uint64 id = 1;
+  string name = 2;
+  string vin = 3;
+  string number = 4;
+  VehicleStatus status = 5;
+  string createdAt = 6;
+  string updatedAt = 7;
+}
+
+
+enum VehicleStatus {
+  //기본값
+  UNKNOWN = 0;
+  //수집 성공
+  SUCCESS = 1;
+  //메시지 포멧 에러
+  MESSAGE_ERROR = 2;
+  //Message Queue 통신 에러
+  STREAM_ERROR = 3;
+}
