@@ -2,3 +2,9 @@ host: "0.0.0.0"
 port: "11000"
 rpcport: "11001"
 develop: "true"
+log:
+  type: "stdout" # stdout, file
+  level: "debug"
+database:
+  driver: "mysql"
+  source: ""

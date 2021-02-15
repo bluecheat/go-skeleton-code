@@ -48,8 +48,10 @@ func GRPCServer(lifecycle fx.Lifecycle, conf *config.Config, ctx components.Cont
 		),
 	)
 
-	vehicleHandler := handlers.NewVehicleHandler(ctx.GetVehicleComponent())
+	vehicleHandler := handlers.NewVehicleHandler(ctx)
+	memberHandler := handlers.NewMemberHandler(ctx)
 	generated.RegisterVehicleServiceServer(s, vehicleHandler)
+	generated.RegisterMemberServiceServer(s, memberHandler)
 
 	lifecycle.Append(
 		fx.Hook{

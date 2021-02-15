@@ -1,6 +1,6 @@
 module skeleton-code
 
-go 1.15
+go 1.14
 
 require (
 	github.com/disintegration/imaging v1.6.2
@@ -10,6 +10,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/jinzhu/gorm v1.9.15
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/segmentio/kafka-go v0.3.7
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/viper v1.7.1

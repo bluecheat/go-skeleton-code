@@ -1,21 +1,31 @@
 package components
 
-import "skeleton-code/components/vehicle"
+import (
+	"skeleton-code/components/member"
+	"skeleton-code/components/vehicle"
+)
 
 type Context interface {
-	GetVehicleComponent() *vehicle.VehicleComponent
+	GetVehicleService() vehicle.IVehicleService
+	GetMemberService() member.IMemberService
 }
 
-type components struct {
-	vehicleComponent *vehicle.VehicleComponent
+type ComponentContext struct {
+	vs vehicle.IVehicleService
+	ms member.IMemberService
 }
 
-func NewContext(vehicleComponent *vehicle.VehicleComponent) Context {
-	return &components{
-		vehicleComponent: vehicleComponent,
+func NewComponentContext(vs vehicle.IVehicleService, ms member.IMemberService) Context {
+	return &ComponentContext{
+		vs: vs,
+		ms: ms,
 	}
 }
 
-func (c *components) GetVehicleComponent() *vehicle.VehicleComponent {
-	return c.vehicleComponent
+func (cc *ComponentContext) GetVehicleService() vehicle.IVehicleService {
+	return cc.vs
+}
+
+func (cc *ComponentContext) GetMemberService() member.IMemberService {
+	return cc.ms
 }

@@ -5,10 +5,13 @@ import (
 	"os"
 	app "skeleton-code"
 	"skeleton-code/components"
+	"skeleton-code/components/member"
 	"skeleton-code/components/vehicle"
 	"skeleton-code/config"
+	"skeleton-code/database"
 	"skeleton-code/logger"
 	"skeleton-code/server"
+	"skeleton-code/server/handlers"
 	"skeleton-code/utils"
 )
 
@@ -25,8 +28,11 @@ func main() {
 	container.Provide(
 		config.LoadConfigFile,
 		utils.NewCloser,
-		vehicle.NewVehicleComponent,
-		components.NewContext,
+		database.NewDatabase,
+		vehicle.NewVehicleService,
+		member.NewMemberService,
+		components.NewComponentContext,
+		handlers.NewVehicleHandler,
 	)
 	container.Invoke(
 		server.GRPCServer,
@@ -38,8 +44,8 @@ func main() {
 		Usage:   usage,
 		Version: version,
 		Action: func(c *cli.Context) error {
-			logger.Info("=====Skeleton Run=====")
-			go container.Run()
+			logger.Info("===== Skeleton Run =====")
+			container.Run()
 			return nil
 		},
 	}

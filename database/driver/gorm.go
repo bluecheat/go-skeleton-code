@@ -1,4 +1,4 @@
-package database
+package driver
 
 import (
 	"context"
@@ -21,10 +21,6 @@ type Database struct {
 	once sync.Once
 }
 
-func (d *Database) DB() *gorm.DB {
-	return d.Db
-}
-
 func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error) {
 	logger.Info("database connecting..", cnf.Database.Driver, cnf.Database.Source)
 	db, err := gorm.Open(cnf.Database.Driver, cnf.Database.Source)
@@ -34,10 +30,8 @@ func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error)
 	}
 	if cnf.Develop {
 		db = db.Debug()
-		AutoMigrate(db)
-	} else {
-		db.SetLogger(logger.Root())
 	}
+
 	db = db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8 auto_increment=1").Debug()
 
 	if cnf.Database.MaxOpen <= 0 {
@@ -64,9 +58,27 @@ func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error)
 	return database, nil
 }
 
-func (db *Database) Close() {
+func (d *Database) Get(model interface{}) error {
+	return d.Db.Where(model).First(model).Error
+}
+
+func (d *Database) Set(model interface{}) error {
+	return d.Db.Create(model).Error
+}
+
+func (d *Database) Update(model interface{}) error {
+	return d.Db.Model(model).Updates(model).Error
+}
+
+func (d *Database) Delete(model interface{}) error {
+	return d.Db.Delete(model).Error
+}
+
+func (db *Database) Close() error {
 	err := db.Db.Close()
 	if err != nil {
 		logger.Error(err)
+		return err
 	}
+	return nil
 }

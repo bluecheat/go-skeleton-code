@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package generated;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "skeleton-code/proto/generated";
+
+service MemberService {
+  // 유저 가입
+  rpc RegisterMember (RegisterMemberRequest) returns (Member) {
+      option (google.api.http) = {
+        post: "/v1/member/join"
+        body: "*"
+      };
+  }
+  // 유저 로그인
+  rpc LoginMember (LoginRequest) returns (AccessToken) {
+    option (google.api.http) = {
+      post: "/v1/member/login"
+      body: "*"
+    };
+  }
+}
+
+message RegisterMemberRequest  {
+  string name = 1;
+  string email = 2;
+  string phone = 3;
+  string password = 4;
+}
+
+message Member  {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+}
+
+message LoginRequest  {
+  string email = 1;
+  string password = 2;
+}
+
+message AccessToken  {
+  string accessToken = 1;
+}
