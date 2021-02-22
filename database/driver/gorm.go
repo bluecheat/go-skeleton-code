@@ -16,12 +16,12 @@ const (
 	DefaultMaxIdleConns = 25
 )
 
-type Database struct {
+type MariaGormDB struct {
 	Db   *gorm.DB
 	once sync.Once
 }
 
-func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error) {
+func NewMariaDB(lifecycle fx.Lifecycle, cnf *config.Config) (*MariaGormDB, error) {
 	logger.Info("database connecting..", cnf.Database.Driver, cnf.Database.Source)
 	db, err := gorm.Open(cnf.Database.Driver, cnf.Database.Source)
 	//db.SetLogger(logger.Root())
@@ -44,7 +44,7 @@ func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error)
 	db.DB().SetMaxIdleConns(cnf.Database.MaxIdle)
 	db.DB().SetConnMaxLifetime(5 * time.Minute)
 
-	database := &Database{
+	database := &MariaGormDB{
 		Db: db,
 	}
 	lifecycle.Append(
@@ -58,23 +58,28 @@ func LoadDatabase(lifecycle fx.Lifecycle, cnf *config.Config) (*Database, error)
 	return database, nil
 }
 
-func (d *Database) Get(model interface{}) error {
-	return d.Db.Where(model).First(model).Error
+func (d *MariaGormDB) Get(model interface{}, where ...interface{}) (interface{}, error) {
+	result := d.Db.Where(where).First(model)
+	return model, result.Error
 }
 
-func (d *Database) Set(model interface{}) error {
+func (d *MariaGormDB) Set(model interface{}, where ...interface{}) error {
 	return d.Db.Create(model).Error
 }
 
-func (d *Database) Update(model interface{}) error {
-	return d.Db.Model(model).Updates(model).Error
+func (d *MariaGormDB) Update(model interface{}, where ...interface{}) error {
+	return d.Db.Model(model).Where(where).Updates(model).Error
 }
 
-func (d *Database) Delete(model interface{}) error {
-	return d.Db.Delete(model).Error
+func (d *MariaGormDB) Delete(model interface{}, where ...interface{}) error {
+	return d.Db.Model(model).Where(where).Delete(model).Error
 }
 
-func (db *Database) Close() error {
+func (d *MariaGormDB) Count(model interface{}, where ...interface{}) (int, error) {
+	return 0, nil
+}
+
+func (db *MariaGormDB) Close() error {
 	err := db.Db.Close()
 	if err != nil {
 		logger.Error(err)

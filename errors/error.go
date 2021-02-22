@@ -1,19 +1,41 @@
 package errors
 
+import "google.golang.org/grpc/codes"
+
 type ErrorCode string
 
-type ComponentError struct {
-	message   string    `json:"message"`
-	errorCode ErrorCode `json:"errorCode"`
+func (code ErrorCode) String() string {
+	return string(code)
 }
 
-func Error(message string, errorCode ErrorCode) error {
+type ComponentError struct {
+	Message   string     `json:"message"`
+	Code      codes.Code `json:"code"`
+	ErrorCode ErrorCode  `json:"errorCode"`
+}
+
+func Error(message string, errorCode ErrorCode) *ComponentError {
 	return &ComponentError{
-		message:   message,
-		errorCode: errorCode,
+		Message:   message,
+		ErrorCode: errorCode,
+	}
+}
+
+func Convert(err error) *ComponentError {
+	switch ve := err.(type) {
+	case *ComponentError:
+		if ve.Code == 0 {
+			ve.Code = codes.Unknown
+		}
+		return ve
+	}
+	return &ComponentError{
+		Message:   err.Error(),
+		Code:      codes.Unknown,
+		ErrorCode: ErrCode,
 	}
 }
 
 func (c ComponentError) Error() string {
-	return c.message
+	return c.Message
 }

@@ -2,7 +2,6 @@ package vehicle
 
 import (
 	"context"
-	"skeleton-code/database"
 	"skeleton-code/errors"
 	"skeleton-code/proto/generated"
 )
@@ -16,12 +15,12 @@ type IVehicleService interface {
 }
 
 type vehicleService struct {
-	db database.Database
+	repository IVehicleRepository
 }
 
-func NewVehicleService(db database.Database) IVehicleService {
+func NewVehicleService(repository IVehicleRepository) IVehicleService {
 	return &vehicleService{
-		db: db,
+		repository: repository,
 	}
 }
 
@@ -33,23 +32,22 @@ func (v vehicleService) RegisterVehicle(ctx context.Context, request *generated.
 		PlateNumber: request.Number,
 		VIN:         request.Vin,
 	}
-
-	err := v.db.Set(newVehicle)
+	createdVehicle, err := v.repository.registerVehicle(ctx, newVehicle)
 	if err != nil {
 		return nil, errors.Error(err.Error(), errors.DatabaseErrCode)
 	}
 
-	return newVehicle, nil
+	return createdVehicle, nil
 }
 
 // GetVehicle 차량 상세
-func (v vehicleService) GetVehicle(ctx context.Context, id *generated.VehicleID) (*Vehicle, error) {
-	findVehicle := &Vehicle{
-		ID: id.Id,
-	}
-	err := v.db.Get(findVehicle)
+func (v vehicleService) GetVehicle(ctx context.Context, request *generated.VehicleID) (*Vehicle, error) {
+
+	findVehicle, err := v.repository.getVehicle(ctx, &Vehicle{
+		ID: request.Id,
+	})
 	if err != nil {
-		return nil, errors.Error(err.Error(), errors.DatabaseErrCode)
+		return nil, errors.Error("not found vehicle", errors.DatabaseErrCode)
 	}
 
 	return findVehicle, nil
@@ -63,7 +61,7 @@ func (v vehicleService) UpdateVehicle(ctx context.Context, request *generated.Up
 		Name:        request.Name,
 		VIN:         request.Vin,
 	}
-	err := v.db.Update(updatedVehicle)
+	_, err := v.repository.updateVehicle(ctx, updatedVehicle)
 	if err != nil {
 		return false, errors.Error(err.Error(), errors.DatabaseErrCode)
 	}
@@ -72,7 +70,9 @@ func (v vehicleService) UpdateVehicle(ctx context.Context, request *generated.Up
 
 // DeleteVehicle 차량 삭제
 func (v vehicleService) DeleteVehicle(ctx context.Context, request *generated.VehicleID) (bool, error) {
-	err := v.db.Delete(request)
+	_, err := v.repository.deleteVehicle(ctx, &Vehicle{
+		ID: request.Id,
+	})
 	if err != nil {
 		return false, errors.Error(err.Error(), errors.DatabaseErrCode)
 	}

@@ -29,6 +29,7 @@ func main() {
 		config.LoadConfigFile,
 		utils.NewCloser,
 		database.NewDatabase,
+		vehicle.NewVehicleRepository,
 		vehicle.NewVehicleService,
 		member.NewMemberService,
 		components.NewComponentContext,

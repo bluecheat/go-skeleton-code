@@ -7,6 +7,7 @@ import (
 	"skeleton-code/components"
 	"skeleton-code/components/vehicle"
 	"skeleton-code/errors"
+	"skeleton-code/logger"
 	"skeleton-code/proto/generated"
 	"skeleton-code/utils"
 )
@@ -37,9 +38,11 @@ func (v vehicleHandler) RegisterVehicle(ctx context.Context, request *generated.
 		return nil, status.Convert(err).Err()
 	}
 
+	logger.Infof("%+v", vehicle)
+
 	return &generated.Vehicle{
 		Id:        vehicle.ID,
-		Name:      "-",
+		Name:      vehicle.Name,
 		Vin:       vehicle.VIN,
 		Number:    vehicle.PlateNumber,
 		Status:    0,
@@ -50,17 +53,18 @@ func (v vehicleHandler) RegisterVehicle(ctx context.Context, request *generated.
 
 func (v vehicleHandler) GetVehicle(ctx context.Context, request *generated.VehicleID) (*generated.Vehicle, error) {
 	if request.Id == 0 {
-		return nil, errors.Error("required vehicle id ", errors.ValidationErrCode)
+		return nil, errors.Error("require vehicle id", errors.ValidationErrCode)
 	}
 
 	vehicle, err := v.vc.GetVehicle(ctx, request)
 	if err != nil {
-		return nil, status.Convert(err).Err()
+		logger.Infof("%+v", errors.Convert(err))
+		return nil, errors.Convert(err)
 	}
 
 	return &generated.Vehicle{
 		Id:        vehicle.ID,
-		Name:      "-",
+		Name:      vehicle.Name,
 		Vin:       vehicle.VIN,
 		Number:    vehicle.PlateNumber,
 		Status:    0,
