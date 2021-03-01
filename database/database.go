@@ -7,6 +7,11 @@ import (
 	logger "skeleton-code/logger"
 )
 
+var (
+	DB_MYSQL = "mysql"
+	DB_MEMDB = "mem"
+)
+
 type Database interface {
 	Get(model interface{}, where ...interface{}) (interface{}, error)
 	Set(model interface{}, where ...interface{}) error
@@ -17,7 +22,7 @@ type Database interface {
 }
 
 func NewDatabase(lifecycle fx.Lifecycle, config *config.Config) Database {
-	if config.Database.Driver == "mysql" {
+	if config.Database.Driver == DB_MYSQL {
 		db, err := driver.NewMariaDB(lifecycle, config)
 		if err != nil {
 			logger.Error(err)

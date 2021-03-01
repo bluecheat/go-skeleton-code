@@ -34,8 +34,23 @@ service VehicleService {
       delete: "/v1/vehicle/{id}"
     };
   }
+
+  // 차량 모델 등록
+  rpc RegisterVehicleModel (RegisterVehicleModelRequest) returns (VehicleModel) {
+    option (google.api.http) = {
+      post: "/v1/vehiclemodel"
+      body: "*"
+    };
+  }
+  // 차량 호출
+  rpc GetVehicleModel(VehicleModelID) returns (VehicleModel) {
+    option (google.api.http) = {
+      get: "/v1/vehiclemodel/{id}"
+    };
+  }
 }
 
+// ======= Vehicle API  Message =======
 message VehicleID  {
   uint64 id = 1;
 }
@@ -60,7 +75,6 @@ message UpdateVehicleRequest {
   VehicleStatus status = 5;
 }
 
-
 message Vehicle {
   uint64 id = 1;
   string name = 2;
@@ -68,9 +82,29 @@ message Vehicle {
   string number = 4;
   VehicleStatus status = 5;
   string createdAt = 6;
-  string updatedAt = 7;
 }
 
+// ======= Vehicle Model API Message =======
+
+message VehicleModelID  {
+  uint64 id = 1;
+}
+
+message RegisterVehicleModelRequest {
+  string color = 1;
+  string gear = 2;
+  string name = 3;
+}
+
+message VehicleModel {
+  uint64 id = 1;
+  string color = 2;
+  string name = 3;
+  string gear = 4;
+  string createdAt = 6;
+}
+
+// ======= Vehicle Status =======
 
 enum VehicleStatus {
   //기본값

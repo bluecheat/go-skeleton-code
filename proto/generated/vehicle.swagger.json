@@ -143,9 +143,88 @@
           "VehicleService"
         ]
       }
+    },
+    "/v1/vehiclemodel": {
+      "post": {
+        "summary": "차량 모델 등록",
+        "operationId": "VehicleService_RegisterVehicleModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/generatedVehicleModel"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/generatedRegisterVehicleModelRequest"
+            }
+          }
+        ],
+        "tags": [
+          "VehicleService"
+        ]
+      }
+    },
+    "/v1/vehiclemodel/{id}": {
+      "get": {
+        "summary": "차량 호출",
+        "operationId": "VehicleService_GetVehicleModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/generatedVehicleModel"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "VehicleService"
+        ]
+      }
     }
   },
   "definitions": {
+    "generatedRegisterVehicleModelRequest": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "gear": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "generatedRegisterVehicleRequest": {
       "type": "object",
       "properties": {
@@ -202,8 +281,26 @@
         },
         "createdAt": {
           "type": "string"
+        }
+      }
+    },
+    "generatedVehicleModel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
         },
-        "updatedAt": {
+        "color": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "gear": {
+          "type": "string"
+        },
+        "createdAt": {
           "type": "string"
         }
       }

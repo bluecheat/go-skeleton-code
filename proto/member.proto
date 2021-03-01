@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package generated;
 
-import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 option go_package = "skeleton-code/proto/generated";
